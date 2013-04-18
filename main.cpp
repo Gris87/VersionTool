@@ -33,7 +33,7 @@ int main(int argc, char **argv)
     // ----------------------------------------------------------------------------
 
     file=fopen(argv[3], "w");
-    fprintf(file, "%d", buildNumber);
+    fprintf(file, "%d\n", buildNumber);
     fclose(file);
 
     if (argc==5)
