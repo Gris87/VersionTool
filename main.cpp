@@ -30,13 +30,6 @@ int main(int argc, char **argv)
 
     ++buildNumber;
 
-    time_t seconds = time(NULL);
-    tm* timeinfo = localtime(&seconds);
-
-    char buffer[80];
-    char* format = "%a %B %d, %Y  %H:%M:%S";
-    strftime(buffer, 80, format, timeinfo);
-
     // ----------------------------------------------------------------------------
 
     file=fopen(argv[3], "w");
@@ -45,6 +38,14 @@ int main(int argc, char **argv)
 
     if (argc==5)
     {
+        time_t seconds = time(NULL);
+        tm* timeinfo = localtime(&seconds);
+
+        char buffer[80];
+        strftime(buffer, 80, "%a %B %d, %Y  %H:%M:%S", timeinfo);
+
+
+
         file=fopen(argv[4], "w");
 
         fprintf(file, "#ifndef VERSION_H\n");
