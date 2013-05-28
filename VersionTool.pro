@@ -9,6 +9,7 @@ SOURCES += main.cpp
 
 
 
+# Set VERSION_TOOL_SCRIPT if you want to run script after build
 VERSION_TOOL_SCRIPT = ""
 
 
@@ -36,7 +37,7 @@ VERSION_TOOL_SCRIPT = ""
 
     installversiontool.commands += $$INSTALL_VERSION_TOOL                                                      \
                                    ||                                                                          \
-                                   echo \"ERROR!!! Impossible create separate folder. Please check logs\" 1>&2
+                                   echo \"ERROR!!! Impossible install versiontool. Please check logs\" 1>&2
 
 
 
