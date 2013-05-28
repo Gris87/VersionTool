@@ -162,8 +162,6 @@ int main(int argc, char **argv)
 
                 writeLine:
                 fputs(line, file);
-
-                printf("%s", line);
             }
 
             fclose(tempFile);
