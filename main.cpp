@@ -2,6 +2,9 @@
 #include <ctime>
 #include <string.h>
 
+#define LINE_SIZE   256
+#define BUFFER_SIZE 4096
+
 void printUsage()
 {
     printf("Usage:\n");
@@ -43,16 +46,36 @@ int main(int argc, char **argv)
                     return 2;
                 }
 
-                char line[256];
+                char line[LINE_SIZE];
 
                 while (!feof(file))
                 {
-                    memset(line, 0, 256);
-                    fgets(line, 256, file);
+                    memset(line, 0, LINE_SIZE);
+
+                    if (fgets(line, LINE_SIZE, file)==0)
+                    {
+                        break;
+                    }
 
                     if (strncmp(line, "#define VERSION_FULL \"", 22)==0)
                     {
-                        int len=strlen(line)-24;
+                        int len=strlen(line)-22;
+
+                        while (
+                               len>0
+                               &&
+                               (
+                                line[len+21]=='\r'
+                                ||
+                                line[len+21]=='\n'
+                                ||
+                                line[len+21]=='\"'
+                               )
+                              )
+                        {
+                            --len;
+                        }
+
                         memcpy(version, line+22, len);
                         version[len]=0;
 
@@ -61,6 +84,8 @@ int main(int argc, char **argv)
                 }
 
                 fclose(file);
+
+                printf("New version: %s\n", version);
             }
 
             // ----------------------------------------------------------------------------
@@ -76,13 +101,19 @@ int main(int argc, char **argv)
                     return 2;
                 }
 
-                char buffer[4096];
-                int size;
+                char buffer[BUFFER_SIZE];
 
-                while (size = fread(buffer, 1, 4096, source))
+                do
                 {
+                    int size=fread(buffer, 1, BUFFER_SIZE, source);
+
+                    if (size==0)
+                    {
+                        break;
+                    }
+
                     fwrite(buffer, 1, size, destanation);
-                }
+                } while(true);
 
                 fclose(source);
                 fclose(destanation);
@@ -97,12 +128,16 @@ int main(int argc, char **argv)
                 return 3;
             }
 
-            char line[256];
+            char line[LINE_SIZE];
 
             while (!feof(tempFile))
             {
-                memset(line, 0, 256);
-                fgets(line, 256, tempFile);
+                memset(line, 0, LINE_SIZE);
+
+                if (fgets(line, LINE_SIZE, tempFile)==0)
+                {
+                    break;
+                }
 
                 char *subString;
 
@@ -112,11 +147,16 @@ int main(int argc, char **argv)
 
                     if (subString)
                     {
-                        char newVersion[256];
+                        char newVersion[LINE_SIZE];
 
                         strcpy(newVersion, "<Version>");
                         strcat(newVersion, version);
                         strcat(newVersion, "</Version>");
+
+                        if (line[strlen(line)-2]=='\r')
+                        {
+                            strcat(newVersion, "\r");
+                        }
 
                         if (line[strlen(line)-1]=='\n')
                         {
@@ -124,6 +164,8 @@ int main(int argc, char **argv)
                         }
 
                         strcpy(subString, newVersion);
+
+                        printf("%s", line);
 
                         goto writeLine;
                     }
@@ -143,11 +185,16 @@ int main(int argc, char **argv)
 
 
 
-                        char newReleaseDate[256];
+                        char newReleaseDate[LINE_SIZE];
 
                         strcpy(newReleaseDate, "<ReleaseDate>");
                         strcat(newReleaseDate, buffer);
                         strcat(newReleaseDate, "</ReleaseDate>");
+
+                        if (line[strlen(line)-2]=='\r')
+                        {
+                            strcat(newReleaseDate, "\r");
+                        }
 
                         if (line[strlen(line)-1]=='\n')
                         {
@@ -155,6 +202,8 @@ int main(int argc, char **argv)
                         }
 
                         strcpy(subString, newReleaseDate);
+
+                        printf("%s", line);
 
                         goto writeLine;
                     }
@@ -189,7 +238,14 @@ int main(int argc, char **argv)
 
             if (file)
             {
-                fscanf(file, "%d", &buildNumber);
+                if (fscanf(file, "%d", &buildNumber)!=1)
+                {
+                    fclose(file);
+
+                    printf("Problem while reading BUILD_NUMBER");
+                    return 4;
+                }
+
                 fclose(file);
             }
 
