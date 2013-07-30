@@ -9,7 +9,7 @@ void printUsage()
 {
     printf("Usage:\n");
     printf("VersionTool.exe MAJOR MINOR BUILD_FILE [FILE]\n");
-    printf("VersionTool.exe -I VERSION_FILE FILE\n");
+    printf("VersionTool.exe -I APPLICATION_NAME VERSION_FILE FILE\n");
 }
 
 #define PRINT_USAGE \
@@ -25,7 +25,7 @@ int main(int argc, char **argv)
 
     if (strcmp(argv[1], "-I")==0)
     {
-        if (argc!=4)
+        if (argc!=5)
         {
             PRINT_USAGE;
         }
@@ -38,11 +38,11 @@ int main(int argc, char **argv)
 
             // Get version
             {
-                FILE *file=fopen(argv[2], "r");
+                FILE *file=fopen(argv[3], "r");
 
                 if (file==0)
                 {
-                    printf("File \"%s\" not found", argv[2]);
+                    printf("File \"%s\" not found", argv[3]);
                     return 2;
                 }
 
@@ -92,12 +92,12 @@ int main(int argc, char **argv)
 
             // Copy temp file
             {
-                FILE *source      = fopen(argv[3], "r");
+                FILE *source      = fopen(argv[4], "r");
                 FILE *destanation = fopen("temp",  "w");
 
                 if (source==0)
                 {
-                    printf("File \"%s\" not found", argv[3]);
+                    printf("File \"%s\" not found", argv[4]);
                     return 2;
                 }
 
@@ -120,7 +120,7 @@ int main(int argc, char **argv)
             }
 
             FILE *tempFile = fopen("temp",  "r");
-            FILE *file     = fopen(argv[3], "w");
+            FILE *file     = fopen(argv[4], "w");
 
             if (tempFile==0)
             {
@@ -140,6 +140,70 @@ int main(int argc, char **argv)
                 }
 
                 char *subString;
+
+                // Replace name
+                {
+                    subString=strstr(line, "<Name>");
+
+                    if (subString)
+                    {
+                        char newName[LINE_SIZE];
+
+                        strcpy(newName, "<Name>");
+                        strcat(newName, argv[2]);
+                        strcat(newName, " ");
+                        strcat(newName, version);
+                        strcat(newName, "</Name>");
+
+                        if (line[strlen(line)-2]=='\r')
+                        {
+                            strcat(newName, "\r");
+                        }
+
+                        if (line[strlen(line)-1]=='\n')
+                        {
+                            strcat(newName, "\n");
+                        }
+
+                        strcpy(subString, newName);
+
+                        printf("%s", line);
+
+                        goto writeLine;
+                    }
+                }
+
+                // Replace display name
+                {
+                    subString=strstr(line, "<DisplayName>");
+
+                    if (subString)
+                    {
+                        char newName[LINE_SIZE];
+
+                        strcpy(newName, "<DisplayName>");
+                        strcat(newName, argv[2]);
+                        strcat(newName, " ");
+                        strcat(newName, version);
+                        strcat(newName, "</DisplayName>");
+
+                        if (line[strlen(line)-2]=='\r')
+                        {
+                            strcat(newName, "\r");
+                        }
+
+                        if (line[strlen(line)-1]=='\n')
+                        {
+                            strcat(newName, "\n");
+                        }
+
+                        strcpy(subString, newName);
+
+                        printf("%s", line);
+
+                        goto writeLine;
+                    }
+                }
 
                 // Replace version
                 {
