@@ -141,31 +141,31 @@ int main(int argc, char **argv)
 
                 char *subString;
 
-                // Replace name
+                // Replace title
                 {
-                    subString=strstr(line, "<Name>");
+                    subString=strstr(line, "<Title>");
 
                     if (subString)
                     {
-                        char newName[LINE_SIZE];
+                        char newTitle[LINE_SIZE];
 
-                        strcpy(newName, "<Name>");
-                        strcat(newName, argv[2]);
-                        strcat(newName, " ");
-                        strcat(newName, version);
-                        strcat(newName, "</Name>");
+                        strcpy(newTitle, "<Title>");
+                        strcat(newTitle, argv[2]);
+                        strcat(newTitle, " ");
+                        strcat(newTitle, version);
+                        strcat(newTitle, "</Title>");
 
                         if (line[strlen(line)-2]=='\r')
                         {
-                            strcat(newName, "\r");
+                            strcat(newTitle, "\r");
                         }
 
                         if (line[strlen(line)-1]=='\n')
                         {
-                            strcat(newName, "\n");
+                            strcat(newTitle, "\n");
                         }
 
-                        strcpy(subString, newName);
+                        strcpy(subString, newTitle);
 
                         printf("%s", line);
 
