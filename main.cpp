@@ -57,26 +57,26 @@ int main(int argc, char **argv)
                         break;
                     }
 
-                    if (strncmp(line, "#define VERSION_FULL \"", 22)==0)
+                    if (strncmp(line, "#define VERSION_FULL            \"", 33)==0)
                     {
-                        int len=strlen(line)-22;
+                        int len=strlen(line)-33;
 
                         while (
                                len>0
                                &&
                                (
-                                line[len+21]=='\r'
+                                line[len+32]=='\r'
                                 ||
-                                line[len+21]=='\n'
+                                line[len+32]=='\n'
                                 ||
-                                line[len+21]=='\"'
+                                line[len+32]=='\"'
                                )
                               )
                         {
                             --len;
                         }
 
-                        memcpy(version, line+22, len);
+                        memcpy(version, line+33, len);
                         version[len]=0;
 
                         break;
@@ -338,11 +338,14 @@ int main(int argc, char **argv)
                 fprintf(file, "#ifndef VERSION_H\n");
                 fprintf(file, "#define VERSION_H\n");
                 fprintf(file, "\n");
-                fprintf(file, "#define BUILD_DATE \"%s\"\n", buffer);
-                fprintf(file, "#define VERSION_MAJOR %s\n", argv[1]);
-                fprintf(file, "#define VERSION_MINOR %s\n", argv[2]);
-                fprintf(file, "#define VERSION_BUILD %d\n", buildNumber);
-                fprintf(file, "#define VERSION_FULL \"%s.%s.%d\"\n", argv[1], argv[2], buildNumber);
+                fprintf(file, "#define BUILD_DATE              \"%s\"\n",         buffer);
+                fprintf(file, "#define VERSION_MAJOR           %s\n",             argv[1]);
+                fprintf(file, "#define VERSION_MINOR           %s\n",             argv[2]);
+                fprintf(file, "#define VERSION_BUILD           %d\n",             buildNumber);
+                fprintf(file, "#define VERSION_FULL            \"%s.%s.%d\"\n",   argv[1], argv[2], buildNumber);
+                fprintf(file, "\n");
+                fprintf(file, "#define VERSION_RES_4_BYTES     %s,%s,%d,0\n",     argv[1], argv[2], buildNumber);
+                fprintf(file, "#define VERSION_RES_4_BYTES_STR \"%s.%s.%d.0\"\n", argv[1], argv[2], buildNumber);
                 fprintf(file, "\n");
                 fprintf(file, "#endif // VERSION_H\n");
 
